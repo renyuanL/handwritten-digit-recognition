@@ -23,7 +23,7 @@
 
 # ### Necessary Imports
 
-# In[1]:
+# In[ ]:
 
 
 # Import necessary packages
@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 from time import time
 
 
-# In[2]:
+# In[ ]:
 
 
 import os
@@ -48,7 +48,7 @@ import os
 
 # ### Download The Dataset & Define The Transforms
 
-# In[3]:
+# In[ ]:
 
 
 # 蒐集、下載、整理 手寫數字資料 (MNIST)，以供實驗
@@ -68,7 +68,8 @@ trainset= datasets.MNIST('drive/My Drive/mnist/MNIST_data/',
                          transform=transform)
 valset=   datasets.MNIST('drive/My Drive/mnist/MNIST_data/', 
                          download= True, 
-                         train=False, transform=transform)
+                         train=False, 
+                         transform=transform)
 
 trainloader= torch.utils.data.DataLoader(trainset, 
                                          batch_size=64, 
@@ -78,9 +79,66 @@ valloader=   torch.utils.data.DataLoader(valset,
                                          shuffle=True)
 
 
+# In[ ]:
+
+
+#
+# 轉存 為 csv 檔案以利觀賞
+#
+import pandas as pd
+
+x= trainset.data.reshape(-1,28*28)
+y= trainset.targets.reshape(-1,1)
+
+pdX= pd.DataFrame(x.numpy())
+pdY= pd.DataFrame(y.numpy())
+pdY.columns= pd.Series(['label'])
+pdZ= pd.concat([pdY, pdX], axis=1)
+pdZ.to_csv('mnistTrain.csv')
+
+
+x= valset.data.reshape(-1,28*28)
+y= valset.targets.reshape(-1,1)
+
+pdX= pd.DataFrame(x.numpy())
+pdY= pd.DataFrame(y.numpy())
+pdY.columns= pd.Series(['label'])
+pdZ= pd.concat([pdY, pdX], axis=1)
+pdZ.to_csv('mnistTest.csv')
+
+# Test Data 之 起始檔案 , 28 x 28
+x= pdX.iloc[0,:]
+x= np.array(x).reshape(-1,28)
+pd.DataFrame(x).to_csv('mnistTest0.csv')
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # ### Exploring The Data
 
-# In[4]:
+# In[ ]:
 
 
 # 觀賞一下資料庫
@@ -92,14 +150,14 @@ print(images.shape)
 print(labels.shape)
 
 
-# In[5]:
+# In[ ]:
 
 
 x= images[0].numpy().squeeze()
 plt.imshow(x, cmap='gray_r');
 
 
-# In[6]:
+# In[ ]:
 
 
 figure = plt.figure()
@@ -115,7 +173,7 @@ for index in range(1, num_of_images + 1):
 
 # ![](https://raw.githubusercontent.com/dmlc/web-data/master/mxnet/image/mlp_mnist.png)
 
-# In[7]:
+# In[ ]:
 
 
 # 定義 神經網路的架構參數
@@ -137,7 +195,7 @@ model = nn.Sequential(nn.Linear(input_size, hidden_sizes[0]),
 print(model)
 
 
-# In[8]:
+# In[ ]:
 
 
 def view_classify(img, ps):
@@ -157,7 +215,7 @@ def view_classify(img, ps):
     plt.tight_layout()
 
 
-# In[9]:
+# In[ ]:
 
 
 # 在訓練之前，先測試一下辨識效能：
@@ -176,7 +234,7 @@ print("Predicted Digit =", probab.index(max(probab)))
 view_classify(img.view(1, 28, 28), ps)
 
 
-# In[10]:
+# In[ ]:
 
 
 # 全面測試辨識效能
@@ -208,7 +266,7 @@ print("\nModel Accuracy =", (correct_count/all_count))
 
 
 
-# In[11]:
+# In[ ]:
 
 
 # 開始準備訓練
@@ -221,19 +279,19 @@ logps = model(images)
 loss = criterion(logps, labels)
 
 
-# In[12]:
+# In[ ]:
 
 
 loss, logps 
 
 
-# In[13]:
+# In[ ]:
 
 
 print(f'Before backward pass: weight= {model[0].weight},\n weightGrad= {model[0].weight.grad}\n')
 
 
-# In[14]:
+# In[ ]:
 
 
 loss.backward()
@@ -242,7 +300,7 @@ loss.backward()
 print(f'Before backward pass: weight= {model[0].weight},\n weightGrad= {model[0].weight.grad}\n')
 
 
-# In[15]:
+# In[ ]:
 
 
 # 指定 Optimization 的演算法為 SGD (Stochastic Gradient Decent)
@@ -253,7 +311,7 @@ from torch import optim
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
 
-# In[16]:
+# In[ ]:
 
 
 print('Initial weights - ', model[0].weight)
@@ -271,7 +329,7 @@ loss.backward()
 print('Gradient -', model[0].weight.grad)
 
 
-# In[17]:
+# In[ ]:
 
 
 # Take an update step and few the new weights
